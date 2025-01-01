@@ -1,3 +1,4 @@
+using Unity.Burst;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,11 +6,13 @@ public class InputManager : MonoBehaviour
 {
     //Movement
     private InputAction moveAction;
-    public Vector2 moveVector {  get; private set; }
+    public static readonly SharedStatic<Vector2> moveVector = SharedStatic<Vector2>.GetOrCreate<InputManager, Vector2FieldKey>();
+    private class Vector2FieldKey { }
 
     //Attack
     private InputAction attackAction;
-    public bool attackPressed { get; private set; }
+    public static readonly SharedStatic<bool> attackPressed = SharedStatic<bool>.GetOrCreate<InputManager, BoolFieldKey>();
+    private class BoolFieldKey { }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -26,7 +29,7 @@ public class InputManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        moveVector = moveAction.ReadValue<Vector2>();
-        attackPressed = attackAction.WasReleasedThisFrame();
+        moveVector.Data = moveAction.ReadValue<Vector2>();
+        attackPressed.Data = attackAction.WasReleasedThisFrame();
     }
 }
